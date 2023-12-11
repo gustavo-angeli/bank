@@ -1,0 +1,49 @@
+# Arquivos de compilação
+*.class
+
+# Arquivos de build do Maven
+target/
+.mvn/wrapper/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Arquivos de build do Gradle
+build/
+out/
+
+# Arquivos de configuração do Eclipse
+.settings/
+
+# Arquivos de configuração do IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Arquivos de configuração do Visual Studio Code
+.vscode/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Logs e relatórios
+*.log
+*.txt
+*.html
+
+# Diretórios específicos
+/bin/
+/build/
+/dist/
+/node_modules/
+/vendor/
+
+# Arquivos temporários
+*.tmp
+*.bak
+*.swp
+
+# Outros
+secret.properties
+env.properties
