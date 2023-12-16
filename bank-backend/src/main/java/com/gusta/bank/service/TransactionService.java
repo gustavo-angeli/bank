@@ -8,17 +8,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
 public class TransactionService {
     private final BankAccountRepository repository;
-    private final JwtTokenProvider jwtTokenService;
+    private final JwtTokenProvider tokenProvider;
 
     public void deposit(TransactionDTO transactionDTO) {
+        if (transactionDTO.getValue().doubleValue() <= 0) {
+            log.error("Value {} equals or less than 0", transactionDTO.getValue());
+            throw new IllegalArgumentException("Invalid value");
+        }
         if (!repository.existsByUser_Email(transactionDTO.getTo())) {
             log.error("Account with email {} don't exists", transactionDTO.getTo());
             throw new IllegalArgumentException("Invalid email!");
@@ -28,15 +30,19 @@ public class TransactionService {
     }
 
     public void transfer(String token, TransactionDTO transactionDTO) {
-        String from = jwtTokenService.getSubject(token);
+        String from = tokenProvider.getSubject(token);
 
+        if (transactionDTO.getValue().doubleValue() <= 0) {
+            log.error("Value {} is equals or less than 0", transactionDTO.getValue());
+            throw new IllegalArgumentException("Invalid value");
+        }
         if (!repository.existsByUser_Email(transactionDTO.getTo())) {
             log.error("Invalid email!");
             throw new IllegalArgumentException("Account with email " + transactionDTO.getTo() + " don't exists");
         }
         if (repository.valueGreaterThanAccountBalance(from, transactionDTO.getValue())) {
-            log.error("Insufficient balance");
-            throw new IllegalArgumentException("Account with email " + from + " don't have " + transactionDTO.getValue() + "$ to transfer");
+            log.error("Account with email {} don't have {} $ to transfer", from, transactionDTO.getValue());
+            throw new IllegalArgumentException("Insufficient balance");
         }
 
         repository.subtractValueByEmail(from, transactionDTO.getValue());

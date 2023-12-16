@@ -23,7 +23,6 @@ public class AuthController {
 
     @PutMapping
     public ResponseEntity<TokenDTO> refresh(@RequestHeader(value = "Authorization") String token) {
-        ParameterValidation.nullOrEmptyParamCustomMessage(token, "Null or Empty Authorization Header");
         return new ResponseEntity<>(service.refreshToken(token), HttpStatus.OK);
     }
 }

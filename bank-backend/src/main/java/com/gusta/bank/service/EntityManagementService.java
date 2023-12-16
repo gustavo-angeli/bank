@@ -3,6 +3,7 @@ package com.gusta.bank.service;
 import com.gusta.bank.domain.model.BankAccount;
 import com.gusta.bank.repository.BankAccountRepository;
 import com.gusta.bank.security.domain.dto.UserDTO;
+import com.gusta.bank.security.domain.enums.Role;
 import com.gusta.bank.security.domain.model.User;
 import com.gusta.bank.security.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
@@ -19,30 +20,28 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional
 public class EntityManagementService {
-    private final BankAccountRepository bankAccountRepository;
+    private final BankAccountRepository repository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenService;
+    private final JwtTokenProvider tokenProvider;
 
     public void create(UserDTO userDTO) {
-        if (bankAccountRepository.existsByUser_Email(userDTO.getEmail())) {
+        if (repository.existsByUser_Email(userDTO.getEmail())) {
             log.error("User with email {} already exists", userDTO.getEmail());
             throw new IllegalArgumentException("The email " + userDTO.getEmail() + " is already in use. Please choose another email");
         }
 
-        User user = new User(null, userDTO.getUsername(), userDTO.getEmail(), passwordEncoder.encode(userDTO.getPassword()), userDTO.getRole());
+        User user = new User(null, userDTO.getUsername(), userDTO.getEmail(), passwordEncoder.encode(userDTO.getPassword()), Role.ROLE_USER);
 
-        bankAccountRepository.save(new BankAccount(null, user, new BigDecimal(0)));
+        repository.save(new BankAccount(null, user, new BigDecimal(0)));
     }
 
     public void deleteByToken(String token) {
-        String userEmail = jwtTokenService.getSubject(token);
+        String userEmail = tokenProvider.getSubject(token);
 
-        bankAccountRepository.deleteByUser_Email(userEmail);
+        repository.deleteByUser_Email(userEmail);
     }
 
     public void deleteById(String id) {
-        bankAccountRepository.deleteById(UUID.fromString(id));
+        repository.deleteById(UUID.fromString(id));
     }
-
-
 }
