@@ -1,7 +1,6 @@
 package com.gusta.bank.repository;
 
 import com.gusta.bank.domain.model.BankAccount;
-import com.gusta.bank.security.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

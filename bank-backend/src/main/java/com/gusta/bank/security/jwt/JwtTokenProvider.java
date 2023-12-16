@@ -3,7 +3,6 @@ package com.gusta.bank.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -29,8 +28,8 @@ import java.util.List;
 public class JwtTokenProvider {
 
     private final UserDetailsService userDetailsService;
-    private String secretKey;
-    private String previousSecretKey;
+    private static String secretKey = "secret";
+    private static String previousSecretKey = "prevSecret";
     private static final long validityInMilliseconds = 3600000;
     private static final long keyRefreshInterval = 86400000;
 
@@ -57,7 +56,12 @@ public class JwtTokenProvider {
     }
 
     public TokenDTO createTokenDTO(String username, List<String> roles) {
-        return new TokenDTO(username, true, generateJWT(username, roles), generateRefreshJWT(username, roles));
+        return new TokenDTO(
+                username,
+                true,
+                generateToken(username, roles, validityInMilliseconds),
+                generateToken(username, roles, validityInMilliseconds * 4)
+        );
     }
 
     public TokenDTO refreshTokenDTO(String refreshJwt) {
@@ -95,14 +99,6 @@ public class JwtTokenProvider {
         return (authHeader != null && authHeader.startsWith("Bearer ")) ? authHeader.substring(7) : null;
     }
 
-    private String generateJWT(String username, List<String> roles) {
-        return generateToken(username, roles, validityInMilliseconds);
-    }
-
-    private String generateRefreshJWT(String username, List<String> roles) {
-        return generateToken(username, roles, validityInMilliseconds * 4);
-    }
-
     private String generateToken(String username, List<String> roles, long validityMilliseconds) {
         Date issuedAt = new Date();
         Date expiresAt = new Date(issuedAt.getTime() + validityMilliseconds);
@@ -119,7 +115,7 @@ public class JwtTokenProvider {
         try {
             return verifyTokenWithSecret(token, secretKey);
         } catch (SignatureVerificationException e) {
-            log.error("Error verifying token with current key. Trying with the previous key.");
+            log.error("Error verifying token with current key. Trying with the previous secret-key.");
             // If the check fails with the current key, try with the previous key
             try {
                 return verifyTokenWithSecret(token, previousSecretKey);
@@ -127,7 +123,7 @@ public class JwtTokenProvider {
                 log.error("Error verifying token with previous secret-key.");
                 throw ex;
             }
-        } catch (JWTDecodeException e) {
+        } catch (JWTVerificationException e) {
             log.error(e.getMessage());
             throw e;
         }
