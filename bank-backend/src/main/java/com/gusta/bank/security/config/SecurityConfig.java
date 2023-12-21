@@ -28,7 +28,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/management",
                                 "/api/v1/auth",
-                                "/api/v1/transaction/deposit"
+                                "/api/v1/transaction/deposit",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/v1/transaction/transfer"
