@@ -13,8 +13,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TransactionServiceTest {
@@ -22,18 +20,18 @@ public class TransactionServiceTest {
     private final JwtTokenProvider tokenProvider = Mockito.mock(JwtTokenProvider.class);
     private final TransactionService service = new TransactionService(repository, tokenProvider);
 
-    private TransactionDTO transactionDTO = new TransactionDTO("email@email.com", new BigDecimal(10));
+    private TransactionDTO transactionDTO = new TransactionDTO("email@email.com", 10);
 
     @BeforeEach
     public void setup() {
         Mockito.reset(repository, tokenProvider);
-        transactionDTO = new TransactionDTO("toEmail@email.com", new BigDecimal(10));
+        transactionDTO = new TransactionDTO("email@email.com", 10);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
     void deposit_Fail_ValueEqualsOrLessThanZero(int value) {
-        transactionDTO.setValue(new BigDecimal(value));
+        transactionDTO.setValue(value);
         Assertions.assertThrows(IllegalArgumentException.class, () -> service.deposit(transactionDTO));
     }
     @Test
@@ -54,7 +52,7 @@ public class TransactionServiceTest {
     @ParameterizedTest
     @ValueSource(ints = {0, -1})
     void transfer_Fail_ValueEqualsOrLessThanZero(int value) {
-        transactionDTO.setValue(new BigDecimal(value));
+        transactionDTO.setValue(value);
         Assertions.assertThrows(IllegalArgumentException.class, () -> service.deposit(transactionDTO));
     }
     @Test

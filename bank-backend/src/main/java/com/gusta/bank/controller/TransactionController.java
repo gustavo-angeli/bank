@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import utils.ParameterValidation;
 
 @Tag(name = "Transaction", description = "Transaction endpoints")
 @RestController
@@ -28,8 +29,9 @@ public class TransactionController {
     )
     @PatchMapping(value = "/deposit")
     public ResponseEntity<HttpStatus> deposit(@RequestBody TransactionDTO transactionDTO) {
+        ParameterValidation.nullOrEmptyParam(transactionDTO.getTo(), transactionDTO.getValue());
         service.deposit(transactionDTO);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @ApiResponse(
@@ -40,7 +42,8 @@ public class TransactionController {
     )
     @PatchMapping(value = "/transfer")
     public ResponseEntity<HttpStatus> transfer(@RequestHeader(name = "Authorization") String token, @RequestBody TransactionDTO transactionDTO) {
+        ParameterValidation.nullOrEmptyParam(transactionDTO.getTo(), transactionDTO.getValue());
         service.transfer(token, transactionDTO);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -1,6 +1,5 @@
 package com.gusta.bank.controller;
 
-import com.gusta.bank.security.domain.dto.TokenDTO;
 import com.gusta.bank.security.domain.dto.UserDTO;
 import com.gusta.bank.service.EntityManagementService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,8 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utils.ParameterValidation;
-
-import java.util.UUID;
 
 @Tag(name = "Management", description = "Management endpoints")
 @RestController

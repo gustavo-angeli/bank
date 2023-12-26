@@ -17,7 +17,7 @@ public class TransactionService {
     private final JwtTokenProvider tokenProvider;
 
     public void deposit(TransactionDTO transactionDTO) {
-        if (transactionDTO.getValue().doubleValue() <= 0) {
+        if (transactionDTO.getValue() <= 0) {
             log.error("Value {} equals or less than 0", transactionDTO.getValue());
             throw new IllegalArgumentException("Invalid value");
         }
@@ -30,9 +30,7 @@ public class TransactionService {
     }
 
     public void transfer(String token, TransactionDTO transactionDTO) {
-        String from = tokenProvider.getSubject(token);
-
-        if (transactionDTO.getValue().doubleValue() <= 0) {
+        if (transactionDTO.getValue() <= 0) {
             log.error("Value {} is equals or less than 0", transactionDTO.getValue());
             throw new IllegalArgumentException("Invalid value");
         }
@@ -40,6 +38,9 @@ public class TransactionService {
             log.error("Invalid email!");
             throw new IllegalArgumentException("Account with email " + transactionDTO.getTo() + " don't exists");
         }
+
+        String from = tokenProvider.getSubject(token);
+
         if (repository.valueGreaterThanAccountBalance(from, transactionDTO.getValue())) {
             log.error("Account with email {} don't have {} $ to transfer", from, transactionDTO.getValue());
             throw new IllegalArgumentException("Insufficient balance");
