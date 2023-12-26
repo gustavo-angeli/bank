@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Slf4j
@@ -32,7 +31,7 @@ public class EntityManagementService {
 
         User user = new User(null, userDTO.getUsername(), userDTO.getEmail(), passwordEncoder.encode(userDTO.getPassword()), Role.ROLE_USER);
 
-        repository.save(new BankAccount(null, user, new BigDecimal(0)));
+        repository.save(new BankAccount(null, user, 0));
     }
 
     public void deleteByToken(String token) {

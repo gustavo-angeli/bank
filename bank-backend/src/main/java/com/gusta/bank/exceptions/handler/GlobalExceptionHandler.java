@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.gusta.bank.exceptions.ExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -29,7 +30,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(JWTVerificationException.class)
+    @ExceptionHandler({
+            JWTVerificationException.class,
+            BadCredentialsException.class
+    })
     public final ResponseEntity<ExceptionResponse> handleUnauthorizedExceptions(Exception ex, WebRequest request) {
         exResponse = new ExceptionResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED.value(), new Date().toString());
         return new ResponseEntity<>(exResponse, HttpStatus.UNAUTHORIZED);
